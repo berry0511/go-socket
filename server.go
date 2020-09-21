@@ -86,6 +86,7 @@ func (s *Server) HandleConnection(c net.Conn) {
         if err := scanner.Err(); err != nil {
             fmt.Fprintln(os.Stderr, "reading standard input:", err)
             s.onError(&session, err)
+            break
         }
     }
 }
