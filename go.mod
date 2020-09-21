@@ -1,4 +1,4 @@
-module gosocket
+module github.com/berry0511/gosocket
 
 go 1.14
 
