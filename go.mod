@@ -1,4 +1,4 @@
-module go-socket
+module gosocket
 
 go 1.14
 
