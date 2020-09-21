@@ -16,7 +16,7 @@ type Server struct {
     clientPool   SessionPool
     idleDuration time.Duration
     onMessage    func(*Session, []byte)
-    onError      func(error)
+    onError      func(*Session ,error)
     onSpliter    func([]byte, bool) (int, []byte, error)
 }
 
@@ -85,7 +85,7 @@ func (s *Server) HandleConnection(c net.Conn) {
         }
         if err := scanner.Err(); err != nil {
             fmt.Fprintln(os.Stderr, "reading standard input:", err)
-            s.onError(err)
+            s.onError(&session, err)
         }
     }
 }
