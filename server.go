@@ -20,7 +20,7 @@ type Server struct {
     onSpliter    func([]byte, bool) (int, []byte, error)
 }
 
-func New(ip string, p int, onMsg func(*Session, []byte), onErr func(error), spliter func([]byte, bool) (int, []byte, error)) *Server {
+func New(ip string, p int, onMsg func(*Session, []byte), onErr func(*Session, error), spliter func([]byte, bool) (int, []byte, error)) *Server {
     return &Server{
         ip:   ip,
         port: p,
