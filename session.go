@@ -2,7 +2,6 @@ package server
 
 import (
     "github.com/satori/go.uuid"
-    "log"
     "net"
 )
 
@@ -14,17 +13,17 @@ type Session struct {
 
 func (s *Session) Send(b []byte) {
     if _, err := s.conn.Write(b); err != nil {
-        log.Print(err)
+        GetLogger().Error(err)
     }
 }
 
 func (s *Session) Close(reason string) {
-    log.Printf("close sesson: %s, reason: %s\n", s.Id.String(), reason)
+    GetLogger().Debugf("close session: %s, reason: %s", s.Id.String(), reason)
 
     s.connected = false
 
     if err := s.conn.Close(); err != nil {
-        log.Println(err)
+        GetLogger().Error(err)
     }
 
 }

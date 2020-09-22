@@ -1,7 +1,6 @@
 package server
 
 import (
-    "fmt"
     "sync"
     "time"
 )
@@ -46,7 +45,7 @@ func (s *SessionPool) CheckConnection() {
         s.source.Range(func(k, v interface{}) bool {
             if !v.(*Session).connected {
                 s.DeleteSession(v.(*Session))
-                fmt.Println("delete session:%s", v.(*Session).conn.RemoteAddr().String())
+                GetLogger().Debug("delete session:" + v.(*Session).conn.RemoteAddr().String())
             }
             return true
         })

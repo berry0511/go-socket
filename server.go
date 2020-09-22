@@ -4,9 +4,7 @@ import (
     "bufio"
     "fmt"
     "github.com/satori/go.uuid"
-    "log"
     "net"
-    "os"
     "time"
 )
 
@@ -44,7 +42,7 @@ func (s *Server) Start() {
     tcpListener, err := net.Listen("tcp4", addr)
 
     if err != nil {
-        log.Fatal("start tcp listener error:", err)
+        GetLogger().Error("start tcp listener error:" + err.Error())
     }
 
     defer tcpListener.Close()
@@ -56,7 +54,7 @@ func (s *Server) Start() {
         conn, connErr := tcpListener.Accept()
 
         if connErr != nil {
-            log.Println("accept error", connErr)
+            GetLogger().Error("accept error" + connErr.Error())
             continue
         }
 
@@ -76,6 +74,7 @@ func (s *Server) HandleConnection(c net.Conn) {
     s.clientPool.AddSession(&session)
 
     for {
+        _ = c.SetDeadline(time.Now().Add(s.idleDuration * time.Second))
         scanner := bufio.NewScanner(session.conn)
         scanner.Split(s.onSpliter)
         for scanner.Scan() {
@@ -84,7 +83,7 @@ func (s *Server) HandleConnection(c net.Conn) {
             s.onMessage(&session, b)
         }
         if err := scanner.Err(); err != nil {
-            fmt.Fprintln(os.Stderr, "reading standard input:", err)
+            GetLogger().Error(err)
             s.onError(&session, err)
             break
         }
@@ -92,7 +91,7 @@ func (s *Server) HandleConnection(c net.Conn) {
 }
 
 func (s *Server) closeSession(session *Session, err error) {
-    fmt.Println("close session")
+    GetLogger().Info("close session")
     go session.Close(err.Error())
     go s.clientPool.DeleteSession(session)
 }
