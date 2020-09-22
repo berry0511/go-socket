@@ -45,7 +45,7 @@ func (s *SessionPool) CheckConnection() {
         s.source.Range(func(k, v interface{}) bool {
             if !v.(*Session).connected {
                 s.DeleteSession(v.(*Session))
-                GetLogger().Debug("delete session:" + v.(*Session).conn.RemoteAddr().String())
+                GetSugerLogger().Debug("delete session:" + v.(*Session).conn.RemoteAddr().String())
             }
             return true
         })

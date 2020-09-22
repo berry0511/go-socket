@@ -13,17 +13,17 @@ type Session struct {
 
 func (s *Session) Send(b []byte) {
     if _, err := s.conn.Write(b); err != nil {
-        GetLogger().Error(err)
+        GetSugerLogger().Error(err)
     }
 }
 
 func (s *Session) Close(reason string) {
-    GetLogger().Debugf("close session: %s, reason: %s", s.Id.String(), reason)
+    GetSugerLogger().Debugf("close session: %s, reason: %s", s.Id.String(), reason)
 
     s.connected = false
 
     if err := s.conn.Close(); err != nil {
-        GetLogger().Error(err)
+        GetSugerLogger().Error(err)
     }
 
 }

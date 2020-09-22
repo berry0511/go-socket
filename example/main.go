@@ -83,7 +83,7 @@ func OnMessage(s *server.Session, b []byte) {
         {
             var msg LocMsgLocData
             msg.Parse(raw.Value)
-            server.GetLogger().Info(msg.String())
+            server.GetSugerLogger().Info(msg.String())
             break
         }
     case 2:
@@ -99,7 +99,7 @@ func OnMessage(s *server.Session, b []byte) {
 }
 
 func OnError(session *server.Session, err error) {
-    server.GetLogger().Info("OnError" + err.Error())
+    server.GetSugerLogger().Info("OnError" + err.Error())
     session.Close(err.Error())
 }
 
@@ -118,7 +118,7 @@ func Splitter(data []byte, atEOF bool) (int, []byte, error) {
         return 0, nil, errors.New("data error - 2")
     }
 
-    server.GetLogger().Debugf("get msg succeed! type: %d", data[2])
+    server.GetSugerLogger().Debugf("get msg succeed! type: %d", data[2])
     return length + HEADER_LENGTH, data[0 : length+HEADER_LENGTH], nil
 }
 
@@ -126,6 +126,7 @@ func main() {
 
     server.InitLogger()
     defer server.GetLogger().Sync()
+    defer server.GetSugerLogger().Sync()
 
     server.GetLogger().Info("test")
 

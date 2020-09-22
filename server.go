@@ -42,7 +42,7 @@ func (s *Server) Start() {
     tcpListener, err := net.Listen("tcp4", addr)
 
     if err != nil {
-        GetLogger().Error("start tcp listener error:" + err.Error())
+        GetSugerLogger().Error("start tcp listener error:" + err.Error())
     }
 
     defer tcpListener.Close()
@@ -54,7 +54,7 @@ func (s *Server) Start() {
         conn, connErr := tcpListener.Accept()
 
         if connErr != nil {
-            GetLogger().Error("accept error" + connErr.Error())
+            GetSugerLogger().Error("accept error" + connErr.Error())
             continue
         }
 
@@ -83,7 +83,7 @@ func (s *Server) HandleConnection(c net.Conn) {
             s.onMessage(&session, b)
         }
         if err := scanner.Err(); err != nil {
-            GetLogger().Error(err)
+            GetSugerLogger().Error(err)
             s.onError(&session, err)
             break
         }
@@ -91,7 +91,7 @@ func (s *Server) HandleConnection(c net.Conn) {
 }
 
 func (s *Server) closeSession(session *Session, err error) {
-    GetLogger().Info("close session")
+    GetSugerLogger().Info("close session")
     go session.Close(err.Error())
     go s.clientPool.DeleteSession(session)
 }

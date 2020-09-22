@@ -4,22 +4,16 @@ import (
     "github.com/natefinch/lumberjack"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
-    "sync"
 )
 
-var sugarLogger *zap.SugaredLogger
+var zapLogger *zap.Logger
 
-func GetLogger() *zap.SugaredLogger {
-    return sugarLogger
+func GetLogger() *zap.Logger {
+    return zapLogger
 }
 
-var once sync.Once
-
-func GetSingletonObj() *zap.SugaredLogger {
-    once.Do(func() {
-        sugarLogger = &zap.SugaredLogger{}
-    })
-    return sugarLogger
+func GetSugerLogger() *zap.SugaredLogger {
+    return zapLogger.Sugar()
 }
 
 func InitLogger() {
@@ -27,13 +21,12 @@ func InitLogger() {
     encoder := getEncoder()
     core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 
-    logger := zap.New(core, zap.AddCaller())
-    sugarLogger = logger.Sugar()
+    zapLogger = zap.New(core, zap.AddCaller())
 }
 
 func getEncoder() zapcore.Encoder {
     encoderConfig := zap.NewProductionEncoderConfig()
-    encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+    encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
     encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
     return zapcore.NewConsoleEncoder(encoderConfig)
 }
