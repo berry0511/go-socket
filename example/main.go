@@ -84,16 +84,13 @@ func OnMessage(s *server.Session, b []byte) {
             var msg LocMsgLocData
             msg.Parse(raw.Value)
             server.GetSugerLogger().Info(msg.String())
-            break
         }
     case 2:
         {
-            break
         }
     default:
         {
             // todo error
-            break
         }
     }
 }
