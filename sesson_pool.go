@@ -6,33 +6,33 @@ import (
 )
 
 type SessionPool struct {
-    source sync.Map
-    add    chan *Session
-    delete chan *Session
-    count  int
-    close bool
+    Source sync.Map
+    Add    chan *Session
+    Delete chan *Session
+    SessionCount int
+    Close       bool
 }
 
 func (s *SessionPool) AddSession(c *Session) {
-    s.add <- c
+    s.Add <- c
 }
 
 func (s *SessionPool) DeleteSession(c *Session) {
-    s.delete <- c
+    s.Delete <- c
 }
 
 func (s *SessionPool) Manager() {
-    for !s.close {
+    for !s.Close {
         select {
-        case m := <-s.add:
+        case m := <-s.Add:
             {
-                s.source.Store(m.Id, m)
-                s.count++
+                s.Source.Store(m.Id, m)
+                s.SessionCount++
                 break
             }
-        case m := <-s.delete:
+        case m := <-s.Delete:
             {
-                s.source.Delete(m.Id)
+                s.Source.Delete(m.Id)
                 break
             }
         }
@@ -40,18 +40,18 @@ func (s *SessionPool) Manager() {
 }
 
 func (s *SessionPool) CheckConnection() {
-    for !s.close {
+    for !s.Close {
         time.Sleep(1 * time.Second)
-        s.source.Range(func(k, v interface{}) bool {
+        s.Source.Range(func(k, v interface{}) bool {
             if !v.(*Session).connected {
                 s.DeleteSession(v.(*Session))
-                GetSugerLogger().Debug("delete session:" + v.(*Session).conn.RemoteAddr().String())
+                GetSugerLogger().Debug("Delete session:" + v.(*Session).conn.RemoteAddr().String())
             }
             return true
         })
     }
 }
 
-func (s *SessionPool) Count() int {
-    return s.count
+func (s *SessionPool) GetSessionCount() int {
+    return s.SessionCount
 }

@@ -9,35 +9,35 @@ import (
 )
 
 type Server struct {
-    ip           string
-    port         int
-    clientPool   SessionPool
-    idleDuration time.Duration
-    onMessage    func(*Session, []byte)
-    onError      func(*Session ,error)
-    onSpliter    func([]byte, bool) (int, []byte, error)
+    Ip           string
+    Port         int
+    ClientPool   SessionPool
+    IdleDuration time.Duration
+    OnMessage    func(*Session, []byte)
+    OnError      func(*Session, error)
+    OnSpliter    func([]byte, bool) (int, []byte, error)
 }
 
-func New(ip string, p int, onMsg func(*Session, []byte), onErr func(*Session, error), spliter func([]byte, bool) (int, []byte, error)) *Server {
-    return &Server{
-        ip:   ip,
-        port: p,
-        clientPool: SessionPool{
-            add:    make(chan *Session, 100),
-            delete: make(chan *Session, 100),
-            count:  0,
-            close:  false,
-        },
-        idleDuration: 60,
-        onMessage:    onMsg,
-        onError:      onErr,
-        onSpliter:    spliter,
-    }
-}
+// func New(Ip string, p int, onMsg func(*Session, []byte), onErr func(*Session, error), spliter func([]byte, bool) (int, []byte, error)) *Server {
+//     return &Server{
+//         Ip:   Ip,
+//         Port: p,
+//         ClientPool: SessionPool{
+//             Add:    make(chan *Session, 100),
+//             Delete: make(chan *Session, 100),
+//             count:  0,
+//             Close:  false,
+//         },
+//         IdleDuration: 60,
+//         OnMessage:    onMsg,
+//         OnError:      onErr,
+//         OnSpliter:    spliter,
+//     }
+// }
 
 func (s *Server) Start() {
 
-    addr := fmt.Sprintf("%s:%d", s.ip, s.port)
+    addr := fmt.Sprintf("%s:%d", s.Ip, s.Port)
 
     tcpListener, err := net.Listen("tcp4", addr)
 
@@ -47,8 +47,8 @@ func (s *Server) Start() {
 
     defer tcpListener.Close()
 
-    go s.clientPool.Manager()
-    go s.clientPool.CheckConnection()
+    go s.ClientPool.Manager()
+    go s.ClientPool.CheckConnection()
 
     for {
         conn, connErr := tcpListener.Accept()
@@ -71,27 +71,27 @@ func (s *Server) HandleConnection(c net.Conn) {
         connected: true,
     }
 
-    s.clientPool.AddSession(&session)
+    s.ClientPool.AddSession(&session)
 
     for {
-        _ = c.SetDeadline(time.Now().Add(s.idleDuration * time.Second))
+        _ = c.SetDeadline(time.Now().Add(s.IdleDuration * time.Second))
         scanner := bufio.NewScanner(session.conn)
-        scanner.Split(s.onSpliter)
+        scanner.Split(s.OnSpliter)
         for scanner.Scan() {
-            _ = c.SetDeadline(time.Now().Add(s.idleDuration * time.Second))
+            _ = c.SetDeadline(time.Now().Add(s.IdleDuration * time.Second))
             b := scanner.Bytes()
-            s.onMessage(&session, b)
+            s.OnMessage(&session, b)
         }
         if err := scanner.Err(); err != nil {
             GetSugerLogger().Error(err)
-            s.onError(&session, err)
+            s.OnError(&session, err)
             break
         }
     }
 }
 
 func (s *Server) closeSession(session *Session, err error) {
-    GetSugerLogger().Info("close session")
+    GetSugerLogger().Info("Close session")
     go session.Close(err.Error())
-    go s.clientPool.DeleteSession(session)
+    go s.ClientPool.DeleteSession(session)
 }

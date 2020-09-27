@@ -18,7 +18,7 @@ func (s *Session) Send(b []byte) {
 }
 
 func (s *Session) Close(reason string) {
-    GetSugerLogger().Debugf("close session: %s, reason: %s", s.Id.String(), reason)
+    GetSugerLogger().Debugf("Close session: %s, reason: %s", s.Id.String(), reason)
 
     s.connected = false
 

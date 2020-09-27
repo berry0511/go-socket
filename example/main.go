@@ -127,7 +127,22 @@ func main() {
 
     server.GetLogger().Info("test")
 
-    s := server.New("127.0.0.1", 60001, OnMessage, OnError, Splitter)
+    // s := server.New("127.0.0.1", 60001, OnMessage, OnError, Splitter)
+
+    s := &server.Server{
+        Ip:   "127.0.0.1",
+        Port: 60001,
+        ClientPool: server.SessionPool{
+            Add:          make(chan *server.Session, 100),
+            Delete:       make(chan *server.Session, 100),
+            SessionCount: 0,
+            Close:        false,
+        },
+        IdleDuration: 60,
+        OnMessage:    OnMessage,
+        OnError:      OnError,
+        OnSpliter:    Splitter,
+    }
 
     s.Start()
 
