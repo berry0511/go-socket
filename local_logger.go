@@ -16,12 +16,16 @@ func GetSugerLogger() *zap.SugaredLogger {
     return zapLogger.Sugar()
 }
 
-func InitLogger() {
+func NewLogger() {
     writeSyncer := getLogWriter()
     encoder := getEncoder()
     core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 
     zapLogger = zap.New(core, zap.AddCaller())
+}
+
+func InitLogger(z *zap.Logger) {
+    zapLogger = z
 }
 
 func getEncoder() zapcore.Encoder {

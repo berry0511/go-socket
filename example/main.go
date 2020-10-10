@@ -121,7 +121,7 @@ func Splitter(data []byte, atEOF bool) (int, []byte, error) {
 
 func main() {
 
-    server.InitLogger()
+    server.NewLogger()
     defer server.GetLogger().Sync()
     defer server.GetSugerLogger().Sync()
 
