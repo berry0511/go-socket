@@ -142,7 +142,10 @@ func main() {
         OnMessage:    OnMessage,
         OnError:      OnError,
         OnSpliter:    Splitter,
+        Stop:         false,
     }
+
+    defer s.CloseServer()
 
     s.Start()
 

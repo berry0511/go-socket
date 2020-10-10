@@ -16,6 +16,7 @@ type Server struct {
     OnMessage    func(*Session, []byte)
     OnError      func(*Session, error)
     OnSpliter    func([]byte, bool) (int, []byte, error)
+    Stop         bool
 }
 
 // func New(Ip string, p int, onMsg func(*Session, []byte), onErr func(*Session, error), spliter func([]byte, bool) (int, []byte, error)) *Server {
@@ -50,7 +51,7 @@ func (s *Server) Start() {
     go s.ClientPool.Manager()
     go s.ClientPool.CheckConnection()
 
-    for {
+    for !s.Stop {
         conn, connErr := tcpListener.Accept()
 
         if connErr != nil {
@@ -73,7 +74,7 @@ func (s *Server) HandleConnection(c net.Conn) {
 
     s.ClientPool.AddSession(&session)
 
-    for {
+    for !s.Stop {
         _ = c.SetDeadline(time.Now().Add(s.IdleDuration * time.Second))
         scanner := bufio.NewScanner(session.conn)
         scanner.Split(s.OnSpliter)
@@ -94,4 +95,8 @@ func (s *Server) closeSession(session *Session, err error) {
     GetSugerLogger().Info("Close session")
     go session.Close(err.Error())
     go s.ClientPool.DeleteSession(session)
+}
+
+func (s *Server) CloseServer() {
+    s.Stop = true
 }

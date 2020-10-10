@@ -6,11 +6,11 @@ import (
 )
 
 type SessionPool struct {
-    Source sync.Map
-    Add    chan *Session
-    Delete chan *Session
+    Source       sync.Map
+    Add          chan *Session
+    Delete       chan *Session
     SessionCount int
-    Close       bool
+    Close        bool
 }
 
 func (s *SessionPool) AddSession(c *Session) {
@@ -28,12 +28,10 @@ func (s *SessionPool) Manager() {
             {
                 s.Source.Store(m.Id, m)
                 s.SessionCount++
-                break
             }
         case m := <-s.Delete:
             {
                 s.Source.Delete(m.Id)
-                break
             }
         }
     }
