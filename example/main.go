@@ -93,6 +93,7 @@ func OnMessage(s *server.Session, b []byte) {
         {
             var msg LocMsgLocData
             msg.Parse(raw.Value)
+            server.GetSugerLogger().Debug(msg.String())
             server.GetSugerLogger().Info(msg.String())
         }
     case 2:
