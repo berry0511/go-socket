@@ -47,25 +47,35 @@ func (l *LocMsg) Parse(b []byte) bool {
 }
 
 func (l *LocMsgLocData) Parse(b []byte) bool {
-    l.Date |= uint32(b[0]) << 16
-    l.Date |= uint32(b[1]) << 8
-    l.Date |= uint32(b[2])
+    i := 0
 
-    l.LatInt = uint8(b[3])
-    l.LatFloat |= uint32(b[4]) << 16
-    l.LatFloat |= uint32(b[5]) << 8
-    l.LatFloat |= uint32(b[6])
+    l.LatInt = b[i]
+    i++
+    l.LatFloat |= uint32(b[i]) << 16
+    i++
+    l.LatFloat |= uint32(b[i]) << 8
+    i++
+    l.LatFloat |= uint32(b[i])
+    i++
 
-    l.LongInt = uint8(b[7])
-    l.LongFloat |= uint32(b[8]) << 16
-    l.LongFloat |= uint32(b[9]) << 8
-    l.LongFloat |= uint32(b[10])
+    l.LongInt = b[i]
+    i++
+    l.LongFloat |= uint32(b[i]) << 16
+    i++
+    l.LongFloat |= uint32(b[i]) << 8
+    i++
+    l.LongFloat |= uint32(b[i])
+    i++
 
-    l.HeightInt |= uint32(b[11]) << 16
-    l.HeightInt |= uint32(b[12]) << 8
-    l.HeightInt |= uint32(b[13])
+    l.HeightInt |= uint32(b[i]) << 16
+    i++
+    l.HeightInt |= uint32(b[i]) << 8
+    i++
+    l.HeightInt |= uint32(b[i])
+    i++
 
-    l.HeightFloat = b[14]
+    l.HeightFloat = b[i]
+    i++
 
     return true
 }
